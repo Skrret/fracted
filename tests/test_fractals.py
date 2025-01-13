@@ -15,23 +15,30 @@ transfs = [
 
 
 @pytest.mark.parametrize(
-    ("nonzero_probs", "start_point"),
-    [({1}, (0, 0)), ({0, 3, 2}, (-3, 8.4)), ({1, 2}, (0.0001, 0))],
+    ("probs", "start_point"),
+    [
+        ([0, 0, 3, 9.7], (0, 0)),
+        ([0.01, 0.005, 0, 0], (-3, 8.4)),
+        ([0, 120, 0, 0], (0.0001, 0)),
+        (None, (-390.987, 23)),
+    ],
 )
-def test_transfs(nonzero_probs, start_point):
-    length = len(transfs)
-    prob = 1 / len(nonzero_probs)
-    probs = []
-    for i in range(length):
-        probs.append(prob * (i in nonzero_probs))
+def test_transfs(probs, start_point):
+    """Test if IFS.step() applies transformation with non-zero probability"""
     frac = fractals.IFS(transfs, probs, start_point)
     last_point = start_point
     for i in range(20):
         frac.step()
         test = False
-        for i in range(length):
-            if transfs[i](last_point) == frac.point and probs[i]:
+        for i in range(len(transfs)):
+            if transfs[i](last_point) == frac.point and (probs is None or probs[i]):
                 test = True
                 break
         assert test
         last_point = frac.point
+
+
+def test_bad_probs_error():
+    """Test if IFS.__init__() raises an error when 'transfs' and 'probs' have different length"""
+    with pytest.raises(ValueError):
+        fractals.IFS(transfs, [0, 3, 2])

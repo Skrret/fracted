@@ -1,6 +1,4 @@
-from typing import Callable, List, Tuple
-
-Transformation = Callable[[Tuple[float, float]], Tuple[float, float]]
+from fracted.types import Point, Transformation
 
 
 class Transf:
@@ -10,5 +8,5 @@ class Transf:
     def __init__(self, func: Transformation) -> None:
         self.func = func
 
-    def __call__(self, point: Tuple[float, float]) -> Tuple[float, float]:
+    def __call__(self, point: Point) -> Point:
         return self.func(point)

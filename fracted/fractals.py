@@ -1,6 +1,7 @@
 from typing import Callable, List, Tuple
 
 import numpy
+from numpy.typing import NDArray
 
 Transformation = Callable[[Tuple[float, float]], Tuple[float, float]]
 
@@ -11,11 +12,22 @@ class IFS:
     probs: List[float] | None
     rng: numpy.random.Generator = numpy.random.default_rng()
     point: Tuple[float, float]
+    resolution: float
+    min_x: float
+    max_x: float
+    min_y: float
+    max_y: float
+    array: NDArray[numpy.uint32]
 
     def __init__(
         self,
         transfs: List[Transformation],
         probs: List[float] | None = None,
+        resolution: float = 1,
+        min_x: float = -100,
+        max_x: float = 100,
+        min_y: float = -100,
+        max_y: float = 100,
         start_point: Tuple[float, float] = (0, 0),
     ) -> None:
         """Parameters:
@@ -40,10 +52,31 @@ class IFS:
                     probs[i] /= s
         self.transfs = transfs
         self.probs = probs
+        self.min_x = min_x
+        self.max_x = max_x
+        self.min_y = min_y
+        self.max_y = max_y
+        self.array = numpy.zeros(
+            (int((max_x - min_x) * resolution), int((max_y - min_y) * resolution)),
+            dtype=numpy.uint32,
+        )
         self.point = start_point
+        self.resolution = resolution
 
-    def step(self) -> None:
+    def step(self, draw: bool = False) -> None:
         """Applies random transformation to the point."""
         i: int = self.rng.choice(len(self.transfs), p=self.probs)
         t: Transformation = self.transfs[i]
         self.point = t(self.point)
+        if draw:
+            self.draw_point(self.point)
+
+    def draw_point(self, point: Tuple[float, float] | None = None) -> None:
+        if point is None:
+            point = self.point
+        x, y = point
+        if self.min_x < x < self.max_x and self.min_y < y < self.max_y:
+            self.array[
+                int(self.resolution * (x + self.min_x)),
+                int(self.resolution * (y + self.min_y)),
+            ] += 1

@@ -1,9 +1,9 @@
-from typing import Callable, List, Tuple
+from typing import List
 
 import numpy
 from numpy.typing import NDArray
 
-Transformation = Callable[[Tuple[float, float]], Tuple[float, float]]
+from fracted.types import Point, Transformation
 
 
 class IFS:
@@ -11,7 +11,7 @@ class IFS:
     transfs: List[Transformation]
     probs: List[float] | None
     rng: numpy.random.Generator = numpy.random.default_rng()
-    point: Tuple[float, float]
+    point: Point
     resolution: float
     min_x: float
     max_x: float
@@ -28,7 +28,7 @@ class IFS:
         max_x: float = 100,
         min_y: float = -100,
         max_y: float = 100,
-        start_point: Tuple[float, float] = (0, 0),
+        start_point: Point = (0, 0),
     ) -> None:
         """Parameters:
 
@@ -71,7 +71,7 @@ class IFS:
         if draw:
             self.draw_point(self.point)
 
-    def draw_point(self, point: Tuple[float, float] | None = None) -> None:
+    def draw_point(self, point: Point | None = None) -> None:
         if point is None:
             point = self.point
         x, y = point
@@ -81,7 +81,7 @@ class IFS:
                 int(self.resolution * (y + self.min_y)),
             ] += 1
 
-    def draw(self, start_iter, n_iter):
+    def draw(self, start_iter: int, n_iter: int) -> NDArray[numpy.uint32]:
         for _ in range(start_iter):
             self.step(draw=False)
         for _ in range(n_iter):

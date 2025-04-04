@@ -80,3 +80,10 @@ class IFS:
                 int(self.resolution * (x + self.min_x)),
                 int(self.resolution * (y + self.min_y)),
             ] += 1
+
+    def draw(self, start_iter: int, n_iter: int) -> NDArray[numpy.uint32]:
+        for _ in range(start_iter):
+            self.step(draw=False)
+        for _ in range(n_iter):
+            self.step(draw=True)
+        return self.array

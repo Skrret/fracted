@@ -3,4 +3,4 @@
 from typing import Callable, Tuple
 
 Point = Tuple[float, float]
-Transformation = Callable[[Point], Point]
+TransformationLike = Callable[[Point], Point]

@@ -3,7 +3,7 @@ from typing import List
 import numpy
 from numpy.typing import NDArray
 
-from fracted.types import Point, Transformation
+from fracted.types import Point, TransformationLike
 
 
 class IFS:
@@ -14,7 +14,7 @@ class IFS:
 
     Attributes
     ----------
-    transfs : List[Transformation]
+    transfs : List[TransformationLike]
         A list of transformations used to generate the fractal
     probs : List[float] | None
         A list of probabilities asociated with `transformations`
@@ -50,7 +50,7 @@ class IFS:
     https://en.wikipedia.org/wiki/Iterated_function_system
     """
 
-    transfs: List[Transformation]
+    transfs: List[TransformationLike]
     probs: List[float] | None
     rng: numpy.random.Generator = numpy.random.default_rng()
     point: Point
@@ -63,7 +63,7 @@ class IFS:
 
     def __init__(
         self,
-        transfs: List[Transformation],
+        transfs: List[TransformationLike],
         probs: List[float] | None = None,
         resolution: float = 1,
         min_x: float = -100,
@@ -75,7 +75,7 @@ class IFS:
         """
         Parameters
         ----------
-        transfs : List[Transformation]
+        transfs : List[TransformationLike]
             a list of transformations used to generate the fractal
         probs : List[float] | None
             A list of probabilities asociated with the transformations.
@@ -130,7 +130,7 @@ class IFS:
             If True, new point will be drawn to `array`. Default is False.
         """
         i: int = self.rng.choice(len(self.transfs), p=self.probs)
-        t: Transformation = self.transfs[i]
+        t: TransformationLike = self.transfs[i]
         self.point = t(self.point)
         if draw:
             self.draw_point(self.point)

@@ -1,11 +1,11 @@
-from fracted.types import Point, Transformation
+from fracted.types import Point, TransformationLike
 
 
-class Transf:
+class Transformation:
 
-    func: Transformation
+    func: TransformationLike
 
-    def __init__(self, func: Transformation) -> None:
+    def __init__(self, func: TransformationLike) -> None:
         self.func = func
 
     def __call__(self, point: Point) -> Point:

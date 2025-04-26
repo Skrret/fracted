@@ -6,9 +6,17 @@ requires-python = ">= 3.10"
 authors = [{name = "Lukáš Koma", email = "koma.luky@gmail.com"}]
 description = "A simple library for drawing IFS fractals and fractal-flames"
 readme = "README.md"
-license = {text = "MIT License"}
-# TODO: keywords, classifiers, urls
+license = "MIT"
+license-files = ["LICENSE"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+# TODO: keywords
 
+[project.urls]
+Homepage = "https://github.com/Skrret/fracted"
+Issues = "https://github.com/Skrret/fracted/issues"
 
 [tool.setuptools]
 packages = ["fracted"]

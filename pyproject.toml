@@ -1,6 +1,6 @@
 [project]
 name = "fracted"
-version = "0.0.0"
+version = "0.1.0"
 dependencies = ["numpy>=1.23.0"]
 requires-python = ">= 3.11"
 authors = [{name = "Lukáš Koma", email = "koma.luky@gmail.com"}]

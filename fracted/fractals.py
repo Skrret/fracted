@@ -4,6 +4,7 @@ import numpy
 from numpy.typing import NDArray
 
 from fracted.types import Point, TransformationLike
+from fracted.transformations import Transformation
 
 
 class IFS:
@@ -101,13 +102,16 @@ class IFS:
         ValueError
             If `transfs` and `probs` don't have the same length
         """
-        if not (probs is None):
-            if len(probs) != len(transfs):
-                raise ValueError("Tranfs and probs must have the same length.")
-            s = sum(probs)
-            if s != 1:
-                for i in range(len(probs)):
-                    probs[i] /= s
+        if probs is None: # Generate probs using Transformation.probability attribute.
+            probs = []
+            for transf in transfs:
+                probs.append(transf.probability if isinstance(transf, Transformation) else 1)
+        elif len(probs) != len(transfs):
+            raise ValueError("Tranfs and probs must have the same length.")
+        s = sum(probs)
+        if s != 1:
+            for i in range(len(probs)):
+                probs[i] /= s
         self.transfs = transfs
         self.probs = probs
         self.min_x = min_x

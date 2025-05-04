@@ -15,12 +15,16 @@ class Transformation:
     ----------
     func : TransformationLike
         This function is called when Transformation instance is called.
+    probability : float
+        The probability that this transformation is selected when rendering IFS.
     """
 
     func: TransformationLike
+    probability: float
 
-    def __init__(self, func: TransformationLike) -> None:
+    def __init__(self, func: TransformationLike, probability: float = 1) -> None:
         self.func = func
+        self.probability = probability
 
     def __call__(self, point: Point) -> Point:
         return self.func(point)

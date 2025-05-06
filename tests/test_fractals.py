@@ -2,6 +2,7 @@ import numpy
 import pytest
 
 from fracted import fractals
+from fracted.transformations import Transformation
 
 transfs = [
     lambda t: t,
@@ -24,18 +25,27 @@ transfs = [
     ],
 )
 def test_transfs(probs, start_point):
-    """Test if IFS.step() applies transformation with non-zero probability"""
-    frac = fractals.IFS(transfs, probs, start_point=start_point)
+    """Test if IFS.step() applies transformation with non-zero probability.
+
+    Test both ways to assign probabilities - list and attribute. Test if they
+    behaves same when same seeds given..
+    """
+    frac1 = fractals.IFS(transfs, probs, start_point=start_point, seed=123)
+    probs2 = probs if probs else [1] * len(transfs)
+    frac2 = fractals.IFS(
+        [Transformation(t, p) for t, p in zip(transfs, probs2)],
+        start_point=start_point,
+        seed=123,
+    )
     last_point = start_point
     for i in range(20):
-        frac.step()
-        test = False
-        for i in range(len(transfs)):
-            if transfs[i](last_point) == frac.point and (probs is None or probs[i]):
-                test = True
-                break
-        assert test
-        last_point = frac.point
+        frac1.step()
+        frac2.step()
+        possible = [t(last_point) for t, p in zip(transfs, probs2) if p]
+        assert frac1.point in possible
+        assert frac2.point in possible
+        assert frac1.point == frac2.point
+        last_point = frac1.point
 
 
 def test_bad_probs_error():

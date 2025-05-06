@@ -1,10 +1,11 @@
 from typing import List
 
 import numpy
+from numpy.random import BitGenerator, Generator, RandomState, SeedSequence
 from numpy.typing import NDArray
 
-from fracted.types import Point, TransformationLike
 from fracted.transformations import Transformation
+from fracted.types import Point, TransformationLike
 
 
 class IFS:
@@ -53,7 +54,7 @@ class IFS:
 
     transfs: List[TransformationLike]
     probs: List[float] | None
-    rng: numpy.random.Generator = numpy.random.default_rng()
+    rng: Generator
     point: Point
     resolution: float
     min_x: float
@@ -72,6 +73,7 @@ class IFS:
         min_y: float = -100,
         max_y: float = 100,
         start_point: Point = (0, 0),
+        seed: int | SeedSequence | BitGenerator | Generator | RandomState | None = None,
     ) -> None:
         """
         Parameters
@@ -96,16 +98,23 @@ class IFS:
             an array representing the final fractal image
         start_point : Point
             initial position of the transformed point
+        seed : int | SeedSequence | BitGenerator | Generator | RandomState | None
+            Seed given to random number generator used to choose random
+            transformation. The most common options are int or Generator.
+            For more informations, see numpy.random.default_rng or
+            https://numpy.org/doc/2.0/reference/random/generator.html#numpy.random.default_rng
 
         Raises
         ------
         ValueError
             If `transfs` and `probs` don't have the same length
         """
-        if probs is None: # Generate probs using Transformation.probability attribute.
+        if probs is None:  # Generate probs using Transformation.probability attribute.
             probs = []
             for transf in transfs:
-                probs.append(transf.probability if isinstance(transf, Transformation) else 1)
+                probs.append(
+                    transf.probability if isinstance(transf, Transformation) else 1
+                )
         elif len(probs) != len(transfs):
             raise ValueError("Tranfs and probs must have the same length.")
         s = sum(probs)
@@ -124,6 +133,7 @@ class IFS:
         )
         self.point = start_point
         self.resolution = resolution
+        self.rng = numpy.random.default_rng(seed)
 
     def step(self, draw: bool = False) -> None:
         """Applies random transformation to the point.
